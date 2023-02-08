@@ -57,7 +57,7 @@ app.get("/states/:stateId/", async (request, response) => {
   const { stateId } = request.params;
   const getStateIdQuery = `SELECT * FROM state WHERE state_id = ${stateId};`;
   const state = await db.get(getStateIdQuery);
-  response.send(state);
+  response.send(convertStateDbObjectToResponseObject(state));
 });
 
 app.get("/districts/:districtId/", async (request, response) => {
@@ -87,13 +87,6 @@ app.post("/districts/", async (request, response) => {
   response.send("District Successfully Added");
 });
 
-app.delete("/districts/:districtId/", async (request, response) => {
-  const { districtId } = request.params;
-  const deleteDistrictQuery = `DELETE FROM district WHERE district_id = ${districtId};`;
-  await db.run(deleteDistrictQuery);
-  response.send("District Removed");
-});
-
 app.put("/districts/:districtId/", async (request, response) => {
   const { districtId } = request.params;
   const { districtName, stateId, cases, cured, active, deaths } = request.body;
@@ -105,6 +98,13 @@ app.put("/districts/:districtId/", async (request, response) => {
     deaths = ${deaths} WHERE district_id = ${districtId};`;
   await db.run(updateDistrictQuery);
   response.send("District Details Updated");
+});
+
+app.delete("/districts/:districtId/", async (request, response) => {
+  const { districtId } = request.params;
+  const deleteDistrictQuery = `DELETE FROM district WHERE district_id = ${districtId};`;
+  await db.run(deleteDistrictQuery);
+  response.send("District Removed");
 });
 
 app.get("/states/:stateId/stats/", async (request, response) => {
